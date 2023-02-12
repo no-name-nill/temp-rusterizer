@@ -1,3 +1,6 @@
+use std::ops::{Add, Sub};
+use std::f32;
+
 
 pub struct Color(pub u8, pub u8, pub u8);
 
@@ -15,14 +18,12 @@ impl Color{
 	}
 }
 
-pub trait Vectorx {
-	fn swap<T:Vectorx>(a:T,  b:T);
-	// normalize
+pub trait Vectorx: Add + Sub + Sized { //useless
+	//fn swap<T:Vectorx>(a:T,  b:T);
+	//normalize
 	//dot
 	//cross
 	//mag
-	//add
-	//sub
 }
 
 pub struct vec2{	//<T>{
@@ -45,8 +46,34 @@ impl vec2{ //Vectorx for
 	}
 }
 
+
+impl Add for &vec3 {
+	type Output = vec3;
+
+	fn add(self, other:Self) -> vec3{
+		vec3{
+			x: self.x+other.x,
+			y: self.y+other.y,
+			z: self.z+other.z
+		}
+	}
+}
+
+impl Sub for &vec3 {
+	type Output = vec3;
+
+	fn sub(self, other:Self) -> vec3{
+		vec3{
+			x: self.x-other.x,
+			y: self.y-other.y,
+			z: self.z-other.z
+		}
+	}
+}
+
 impl vec3{
-	pub fn cross(a:vec3, b:vec3) -> vec3{
+
+	pub fn cross(a:&vec3, b:&vec3) -> vec3{
 		let n = vec3{
 			x: (a.y*b.z)-(b.y*a.z),
 			y: (a.x*b.z)-(b.x*a.z),
@@ -54,7 +81,33 @@ impl vec3{
 		};
 		n
 	}
+
+	pub fn dot(a:&vec3, b:&vec3)->f32{
+		let dot = a.x*b.x + a.y*b.y + a.z*b.z;
+		dot
+	}
+
+	pub fn normalize(a:&vec3) -> vec3{
+		let mag = vec3::magnitude(&a);
+		vec3{
+			x: (a.x/mag),
+			y: (a.y/mag),
+			z: (a.z/mag)
+		}
+	}
+
+	fn magnitude(a:&vec3) -> f32{
+		let mag = ((a.x*a.x)+(a.y*a.y)+(a.z*a.z)).sqrt();
+		mag
+	}
+
+
+
 }
+
+
+
+
 
 pub fn lerp(x1:f32, y1:f32, x2:f32, y2:f32, x:f32) -> f32{ 
 	let slope:f32 = (y2-y1) /(x2-x1);

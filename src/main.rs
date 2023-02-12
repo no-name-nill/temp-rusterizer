@@ -18,19 +18,13 @@ fn main() {
     	
     	window_handler.set_color(Color(0, 255, 0));
 
-    	drawCube(&mut window_handler);
-
-    	window_handler.render();
-	
-	}
-}
-
-
-fn drawCube(window_handler:&mut Window_Handler){
 	const d:f32 = 250.0;//z' dist from camera to viewport assuming camera is at 0
+	//const cam_pos: vec3 = vec3{x:0.0, y:0.0, z:0.0};
+	const cam_dir: vec3 = vec3{x:1.0, y:1.0, z:1.0};
 
     //cube!!
 	let points = Vec::from([
+
 		vec3{x:270.0, y:130.0, z:100.0}, //0
 		vec3{x:370.0, y:130.0, z:100.0}, //1
 		vec3{x:370.0, y:230.0, z:100.0}, //2
@@ -43,44 +37,58 @@ fn drawCube(window_handler:&mut Window_Handler){
 
 	let index_buffer = Vec::from([
 		0, 1, 2,
-		1, 2, 3,
+		2, 3, 0,
 
-		0, 4, 5,
-		4, 5, 1,
-		
-		0, 4, 7,
-		4, 7, 3,
+		0, 1, 5,
+		5, 4, 0,
+
+		0, 3, 7,
+		7, 4, 0,
 
 		1, 5, 6,
-		5, 6, 2,
+		6, 2, 1,
 
-		4, 5, 6,
-		5, 6, 7,
+		4, 7, 6,
+		6, 5, 4,
 
 		2, 3, 7,
-		3, 7, 6
+		7, 6, 2
 		]);
 		
-		//for points in polygon
+	//for points in polygon
 	for i in (0..12){
 
-		//let normal = vec3::cross(points[index_buffer[i*3]]-points[index_buffer[(i*3)+1]]);
+		let normal = vec3::cross(
+			&(vec3::normalize(&(&points[index_buffer[(i*3)+0]]-&points[index_buffer[(i*3)+1]]))),
+			&(vec3::normalize(&(&points[index_buffer[(i*3)+1]]-&points[index_buffer[(i*3)+2]])))
+			);
 
-		let p1 = vec2{
-			x: (d*points[index_buffer[i*3]].x)/(d+points[index_buffer[i*3]].z),
-			y: (d*points[index_buffer[i*3]].y)/(d+points[index_buffer[i*3]].z)
-		};
-		let p2 = vec2{
-			x: (d*points[index_buffer[(i*3)+1]].x)/(d+points[index_buffer[(i*3)+1]].z),
-			y: (d*points[index_buffer[(i*3)+1]].y)/(d+points[index_buffer[(i*3)+1]].z)
-		};
-		let p3 = vec2{
-			x: (d*points[index_buffer[(i*3)+2]].x)/(d+points[index_buffer[(i*3)+2]].z),
-			y: (d*points[index_buffer[(i*3)+2]].y)/(d+points[index_buffer[(i*3)+2]].z)
-		};
-		window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
-		//window_handler.draw_triangle("FILL", &p1, &p2, &p3);
 
+		if(vec3::dot(&normal, &cam_dir)>0.0)
+		{
+			let p1 = vec2{
+				x: (d*points[index_buffer[i*3]].x)/(d+points[index_buffer[i*3]].z),
+				y: (d*points[index_buffer[i*3]].y)/(d+points[index_buffer[i*3]].z)
+			};
+			let p2 = vec2{
+				x: (d*points[index_buffer[(i*3)+1]].x)/(d+points[index_buffer[(i*3)+1]].z),
+				y: (d*points[index_buffer[(i*3)+1]].y)/(d+points[index_buffer[(i*3)+1]].z)
+			};
+			let p3 = vec2{
+				x: (d*points[index_buffer[(i*3)+2]].x)/(d+points[index_buffer[(i*3)+2]].z),
+				y: (d*points[index_buffer[(i*3)+2]].y)/(d+points[index_buffer[(i*3)+2]].z)
+			};
+			
+			//window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
+			window_handler.draw_triangle("FILL", &p1, &p2, &p3);
+
+		}
 
 	}
+    	window_handler.render();
+	
+	}
 }
+
+
+

@@ -82,17 +82,18 @@ impl Window_Handler{
 			self.draw_line(p1.x as u16, p1.y as u16, p3.x as u16, p3.y as u16);
 		}
 		else if(style == "FILL"){
-
 			let mut sp1 = vec2{x:p1.x, y:p1.y};
 			let mut sp2 = vec2{x:p2.x, y:p2.y};
 			let mut sp3 = vec2{x:p3.x, y:p3.y};
 			if sp1.y > sp2.y{vec2::swap(&mut sp1, &mut sp2);}
-			if sp2.y > sp3.y{vec2::swap(&mut sp2, &mut sp3);}
 			if sp1.y > sp3.y{vec2::swap(&mut sp1, &mut sp3);}
+			if sp2.y > sp3.y{vec2::swap(&mut sp2, &mut sp3);}
 
 			if sp1.y == sp2.y && sp1.x>sp2.x{vec2::swap(&mut sp1, &mut sp2);}
 
-			for i in 0..(sp3.y-sp1.y)as u16{
+			//if
+
+			for i in 0..(sp2.y-sp1.y) as u16{
 				let i = f32::from(i);
 				//lerp line 1-2
 				let x1 = lerp(sp1.y, sp1.x, sp2.y, sp2.x, sp1.y+i);
@@ -101,7 +102,27 @@ impl Window_Handler{
 				//draw
 				self.draw_line(x1 as u16, (sp1.y+i) as u16, x2 as u16, (sp1.y+i) as u16);
 			}
-		//shaded too
+			for i in 0..(sp3.y-sp2.y) as u16{
+				let i = f32::from(i);
+				//lerp line 1-2
+				let x1 = lerp(sp2.y, sp2.x, sp3.y, sp3.x, sp2.y+i); //fix
+				//lerp line 1-3
+				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp2.y+i);
+				//draw
+				self.draw_line(x1 as u16, (sp2.y+i) as u16, x2 as u16, (sp2.y+i) as u16);
+			}
+
+			/*for i in 0..(sp3.y-sp1.y)as u16{
+				let i = f32::from(i);
+				//lerp line 1-2
+				let x1 = lerp(sp1.y, sp1.x, sp2.y, sp2.x, sp1.y+i);
+				//lerp line 1-3
+				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp1.y+i);
+				//draw
+				self.draw_line(x1 as u16, (sp1.y+i) as u16, x2 as u16, (sp1.y+i) as u16);
+			}*/
+			
+			//shaded triangles too
 		}
 		else {panic!("invalid style");}
 	}
