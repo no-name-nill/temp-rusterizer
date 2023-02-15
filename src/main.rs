@@ -4,9 +4,7 @@ mod util;
 mod window_handler;
 
 use util::*;
-use window_handler::Window_Handler;
-
-use std::cmp;
+use window_handler::WindowHandler;
 
 use minifb::Key;
 
@@ -16,15 +14,15 @@ const HEIGHT: usize = 360;
 
 fn main() {
 
-	let mut window_handler = Window_Handler::new(WIDTH, HEIGHT);
+	let mut window_handler = WindowHandler::new(WIDTH, HEIGHT);
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
  	
     	//REFACTOR THIS, CLEAN THIS AND FIX ALL THIS
 
     	const d:f32 = 250.0;//z' dist from camera to viewport assuming camera is at 0
-		const cam_pos: vec3 = vec3{x:0.0, y:0.0, z:0.0};
-		const light_source: vec3 = vec3{x: 250.0, y: 50.0, z: 0.0};
+		let cam_pos = vec3{x:0.0, y:0.0, z:0.0};
+		let light_source = vec3{x: 250.0, y: 50.0, z: 0.0};
 
     	//cube!!
 		let points = Vec::from([
@@ -64,7 +62,7 @@ fn main() {
 			]);
 		
 		//for points in polygon
-		for i in (0..12){
+		for i in 0..12{
 
 			let normal = vec3::cross(
 				&(vec3::normalize(&(&points[index_buffer[(i*3)+1]]-&points[index_buffer[(i*3)+0]]))),
@@ -72,7 +70,7 @@ fn main() {
 				);
 
 			let cam_dir = vec3::normalize(&(&points[index_buffer[(i*3)+1]]-&cam_pos));
-			if(vec3::dot(&normal, &cam_dir)<0.0) //backface culling
+			if vec3::dot(&normal, &cam_dir)<0.0 //backface culling
 			{
 				let p1 = vec2{
 					x: (d*points[index_buffer[i*3]].x)/(d+points[index_buffer[i*3]].z),

@@ -1,9 +1,7 @@
 use minifb::{Key, Window, WindowOptions};
 use crate::util::*;
 
-
-
-pub struct Window_Handler {
+pub struct WindowHandler {
 	pub window: Window,
 	pub buffer: Vec<u32>,
 	pub win_WIDTH: usize,
@@ -12,8 +10,8 @@ pub struct Window_Handler {
 
 }
 
-impl Window_Handler{
-	pub fn new(WIDTH:usize, HEIGHT:usize)->Window_Handler{
+impl WindowHandler{
+	pub fn new(WIDTH:usize, HEIGHT:usize)->WindowHandler{
 		let mut window = Window::new(
 			"Rusterizer!!",
 			WIDTH,
@@ -25,7 +23,7 @@ impl Window_Handler{
 
 		let mut buffer: Vec<u32> = vec![0;WIDTH*HEIGHT];
 
-		Window_Handler{window: window,
+		WindowHandler{window: window,
 			buffer: buffer,
 			win_WIDTH: WIDTH,
 			win_HEIGHT: HEIGHT,
@@ -37,22 +35,22 @@ impl Window_Handler{
 		for i in self.buffer.iter_mut(){
 			*i = 0;
 		}
-		self.window.update_with_buffer(&self.buffer, self.win_WIDTH, self.win_HEIGHT);
+		self.window.update_with_buffer(&self.buffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
 
 	pub fn render(&mut self){
-		self.window.update_with_buffer(&self.buffer, self.win_WIDTH, self.win_HEIGHT);
+		self.window.update_with_buffer(&self.buffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
 
 	pub fn set_color(&mut self, color:Color){
 		self.current_color = color.to_u32();
 	}
-	
+
 	pub fn putPixel(&mut self, x:u16, y:u16){
 		self.buffer[(x as u32 +y as u32 *self.win_WIDTH as u32)as usize] = self.current_color;
 	}
 
-	pub fn putPixel_withColor(&mut self, x:u16, y:u16, color:Color){
+	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
 		self.buffer[(x as u32 +y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
 	}
 
@@ -64,14 +62,14 @@ impl Window_Handler{
 		let diffy = if y2>y1 {y2-y1} else {y1-y2};
 
 		if diffx > diffy{
-			for i in (0..diffx){
+			for i in 0..diffx{
 				let x3 = if x2>x1 {x1+i} else {x1-i};
 				let y3 = lerp(x1 as f32, y1 as f32, x2 as f32, y2 as f32, x3 as f32) as u16;
 				self.putPixel(x3, y3);
 			}
 		}
 		else{
-			for i in (0..diffy){
+			for i in 0..diffy{
 				let y3 = if y2>y1 {y1+i} else {y1-i};
 				let x3 = lerp(y1 as f32, x1 as f32, y2 as f32, x2 as f32, y3 as f32) as u16;
 				self.putPixel(x3, y3);
@@ -87,12 +85,12 @@ impl Window_Handler{
 			panic!("lines are collinear can't make a triangle");
 		}
 
-		if(style == "WIREFRAME"){
+		if style == "WIREFRAME"{
 			self.draw_line(p1.x as u16, p1.y as u16, p2.x as u16, p2.y as u16);
 			self.draw_line(p2.x as u16, p2.y as u16, p3.x as u16, p3.y as u16);
 			self.draw_line(p1.x as u16, p1.y as u16, p3.x as u16, p3.y as u16);
 		}
-		else if(style == "FILL"){
+		else if style == "FILL"{
 			let mut sp1 = vec2{x:p1.x, y:p1.y};
 			let mut sp2 = vec2{x:p2.x, y:p2.y};
 			let mut sp3 = vec2{x:p3.x, y:p3.y};
@@ -180,19 +178,19 @@ impl Window_Handler{
 		let diffy = if y2>y1 {y2-y1} else {y1-y2};
 
 		if diffx > diffy{
-			for i in (0..diffx){
+			for i in 0..diffx{
 				let x3 = if x2>x1 {x1+i} else {x1-i};
 				let y3 = lerp(x1 as f32, y1 as f32, x2 as f32, y2 as f32, x3 as f32) as u16;
-				let c3 = Color::mix(c1, c2, (i as f64/diffx as f64));
-				self.putPixel_withColor(x3, y3, c3);
+				let c3 = Color::mix(c1, c2, i as f64/diffx as f64);
+				self.put_pixel_with_color(x3, y3, c3);
 			}
 		}
 		else{
-			for i in (0..diffy){
+			for i in 0..diffy{
 				let y3 = if y2>y1 {y1+i} else {y1-i};
 				let x3 = lerp(y1 as f32, x1 as f32, y2 as f32, x2 as f32, y3 as f32) as u16;
-				let c3 = Color::mix(c1, c2, (i as f64/diffy as f64));
-				self.putPixel_withColor(x3, y3, c3);
+				let c3 = Color::mix(c1, c2, i as f64/diffy as f64);
+				self.put_pixel_with_color(x3, y3, c3);
 			}
 		}
 	}

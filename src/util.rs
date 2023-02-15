@@ -1,6 +1,7 @@
+#![allow(non_snake_case)]
+
 use std::ops::{Add, Sub};
 use std::f32;
-
 
 pub struct Color(pub u8, pub u8, pub u8, pub f32);
 
@@ -64,12 +65,6 @@ pub struct vec2{
 	pub y:f32
 }
 
-pub struct vec3 {
-	pub x:f32,
-	pub y:f32,
-	pub z:f32
-}
-
 impl vec2{
 	
 	pub fn swap(a:&mut vec2,  b:&mut vec2){
@@ -89,6 +84,11 @@ impl vec2{
 	//pub fn copy(&self)->vec2{}
 }
 
+pub struct vec3 {
+	pub x:f32,
+	pub y:f32,
+	pub z:f32
+}
 
 impl Add for &vec3 {
 	type Output = vec3;
@@ -151,7 +151,49 @@ impl vec3{
 		mag
 	}
 	//pub fn copy(&self)->vec2{}
+}
 
+pub struct vec4 {
+	pub x:f32,
+	pub y:f32,
+	pub z:f32,
+	pub w:f32
+}
+
+
+impl vec4{
+	pub fn to_vec3(&self) -> vec3{
+		if self.w == 0.0 {
+			vec3{
+				x: self.x,
+				y: self.y,
+				z: self.z
+			}
+		}
+		else {
+			vec3{
+				x: self.x/self.w,
+				y: self.y/self.w,
+				z: self.z/self.w
+			}
+		}
+	}
+}
+
+pub struct matrix4x4 {
+	//
+}
+
+impl matrix4x4 {
+	//pub fn matrix_vec_mult(&self, vec:vec4)->vec4{}
+}
+
+
+
+pub struct vertex {
+	pub pos: vec3,
+	pub color: Option<Color>
+	//normal
 }
 
 pub fn lerp(x1:f32, y1:f32, x2:f32, y2:f32, x:f32) -> f32{ 
@@ -159,13 +201,6 @@ pub fn lerp(x1:f32, y1:f32, x2:f32, y2:f32, x:f32) -> f32{
 	
 	if (x2-x1) == 0.0 {return y2}
 
-	let y = ((slope*(x-x1))+y1);
+	let y = (slope*(x-x1))+y1;
 	y
-}
-
-
-pub struct vertex {
-	pub pos: vec3,
-	pub color: Option<Color>
-	//normal
 }
