@@ -146,10 +146,20 @@ impl vec3{
 		}
 	}
 
-	fn magnitude(a:&vec3) -> f32{
+	pub fn magnitude(a:&vec3) -> f32{
 		let mag = ((a.x*a.x)+(a.y*a.y)+(a.z*a.z)).sqrt();
 		mag
 	}
+
+	pub fn to_vec4(&self) -> vec4{
+		vec4{
+			x: self.x,
+			y: self.y,
+			z: self.z,
+			w: 1.0
+		}
+	}
+
 	//pub fn copy(&self)->vec2{}
 }
 

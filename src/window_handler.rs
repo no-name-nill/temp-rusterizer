@@ -53,9 +53,6 @@ impl WindowHandler{
 	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
 		self.buffer[(x as u32 +y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
 	}
-
-	//pub fn putPoint(&mut self, p: vec2){}
-	//pub fn draw_line(&mut self, p1: vec2, p2: vec2){
 	
 	pub fn draw_line(&mut self, x1:u16, y1:u16, x2:u16, y2:u16){
 		let diffx = if x2>x1 {x2-x1} else {x1-x2};
@@ -100,21 +97,21 @@ impl WindowHandler{
 
 			if sp1.y == sp2.y && sp1.x>sp2.x{vec2::swap(&mut sp1, &mut sp2);}
 
-			for i in 0..(sp2.y-sp1.y) as u16{
+			for i in 0..(sp2.y-sp1.y+1) as u16{
 				let i = f32::from(i);
 				//lerp line 1-2
-				let x1 = lerp(sp1.y, sp1.x, sp2.y, sp2.x, sp1.y+i);
+				let x1 = lerp(sp1.y, sp1.x, sp2.y, sp2.x, sp1.y+i+1.0);
 				//lerp line 1-3
-				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp1.y+i);
+				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp1.y+i+1.0);
 				//draw
 				self.draw_line(x1 as u16, (sp1.y+i) as u16, x2 as u16, (sp1.y+i) as u16);
 			}
-			for i in 0..(sp3.y-sp2.y) as u16{
+			for i in 0..(sp3.y-sp2.y+1.0) as u16{
 				let i = f32::from(i);
 				//lerp line 1-2
-				let x1 = lerp(sp2.y, sp2.x, sp3.y, sp3.x, sp2.y+i);
+				let x1 = lerp(sp2.y, sp2.x, sp3.y, sp3.x, sp2.y+i+1.0);
 				//lerp line 1-3
-				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp2.y+i);
+				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp2.y+i+1.0);
 				//draw
 				self.draw_line(x1 as u16, (sp2.y+i) as u16, x2 as u16, (sp2.y+i) as u16);
 			}
@@ -144,21 +141,21 @@ impl WindowHandler{
 			}
 			if p1.y == p2.y && p1.x>p2.x{vec2::swap(&mut p1, &mut p2);}
 
-			for i in 0..(p2.y-p1.y) as u16{
+			for i in 0..(p2.y-p1.y+1.0) as u16{
 				let i = f32::from(i);
-				let x1 = lerp(p1.y, p1.x, p2.y, p2.x, p1.y+i);
+				let x1 = lerp(p1.y, p1.x, p2.y, p2.x, p1.y+i+1.0);
 				let cx1 = Color::mix(&c1, &c2, i as f64/(p2.y-p1.y) as f64);
-				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p1.y+i);
+				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p1.y+i+1.0);
 				let cx2 = Color::mix(&c1, &c3, i as f64/(p2.y-p1.y) as f64);
 				self.draw_shaded_line(&vec2{x:x1, y:(p1.y+i)}, &vec2{x:x2, y:(p1.y+i)}, &cx1, &cx2);
 			}
-			for i in 0..(p3.y-p2.y) as u16{
+			for i in 0..(p3.y-p2.y+1.0) as u16{
 				let i = f32::from(i);
-				let x1 = lerp(p2.y, p2.x, p3.y, p3.x, p2.y+i);
+				let x1 = lerp(p2.y, p2.x, p3.y, p3.x, p2.y+i+1.0);
 				let cx1 = Color::mix(&c1, &c2, i as f64/(p3.y-p2.y) as f64);
-				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p2.y+i);
+				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p2.y+i+1.0);
 				let cx2 = Color::mix(&c1, &c3, i as f64/(p3.y-p2.y) as f64);
-				self.draw_shaded_line(&vec2{x:x1 , y:(p2.y+i)}, &vec2{x:x2, y:(p2.y+i)}, &cx1, &cx2);
+				self.draw_shaded_line(&vec2{x:x1 , y:(p2.y+i+1.0)}, &vec2{x:x2, y:(p2.y+i+1.0)}, &cx1, &cx2);
 			}
 		}		
 		else {

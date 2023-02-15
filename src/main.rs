@@ -111,11 +111,18 @@ fn main() {
 						(255.0*light_intensity3)as u8,
 						(255.0*light_intensity3)as u8,
 						(255.0*light_intensity3)as u8,1.0))};
-				window_handler.draw_shaded_triangle(&v1, &v2, &v3);
+				//window_handler.draw_shaded_triangle(&v1, &v2, &v3);
 
 			}
 
 		}
+		let tp1 = vec2{x: 200.0, y: 200.0};
+		let tp2 = vec2{x: 100.0, y: 200.0};//{x: 200.0, y: 300.0};
+		let tp3 = vec2{x: 300.0, y: 300.0};
+		window_handler.set_color(Color(255,255,255,1.0));
+		window_handler.draw_triangle("WIREFRAME", &tp1, &tp2, &tp3);
+		window_handler.set_color(Color(255,0,0,1.0));
+		window_handler.draw_triangle("FILL", &tp1, &tp2, &tp3);
     	window_handler.render();
 	}
 }
