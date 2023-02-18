@@ -18,13 +18,13 @@ impl Color{
 		(256*256*(*R) as u32)+(256*(*G) as u32)+(*B) as u32
 	}
 
-	pub fn mix(c1:&Color, c2:&Color, t:f64) -> Color{
+	pub fn mix(c1:&Color, c2:&Color, t:f32) -> Color{
 		let Color(R1, G1, B1, A1) = c1;
 		let Color(R2, G2, B2, A2) = c2;
 		//c1+(c2-c1)*t;
-		let c3:Color = Color((*R1 as f64+(((*R2) as f64 - (*R1) as f64)*t))as u8,
-			(*G1 as f64+(((*G2) as f64- (*G1) as f64)as f64*t))as u8,
-			(*B1 as f64+(((*B2) as f64- (*B1) as f64)as f64*t))as u8, 1.0);
+		let c3:Color = Color((*R1 as f32+(((*R2) as f32 - (*R1) as f32)*t))as u8,
+			(*G1 as f32+(((*G2) as f32- (*G1) as f32)as f32*t))as u8,
+			(*B1 as f32+(((*B2) as f32- (*B1) as f32)as f32*t))as u8, 1.0);
 		c3
 	}
 
@@ -132,7 +132,7 @@ impl vec3{
 		n
 	}
 
-	pub fn dot(a:&vec3, b:&vec3)->f32{ //or f64
+	pub fn dot(a:&vec3, b:&vec3)->f32{ //or f32
 		let dot = a.x*b.x + a.y*b.y + a.z*b.z;
 		dot
 	}
@@ -191,19 +191,26 @@ impl vec4{
 }
 
 pub struct matrix4x4 {
-	//
+	pub data: [[f32; 4]; 4]
 }
 
 impl matrix4x4 {
-	//pub fn matrix_vec_mult(&self, vec:vec4)->vec4{}
+	pub fn matrix_vec_mult(&self, vec:&vec4)->vec4{
+		vec4{
+			x: self.data[0][0]*vec.x+self.data[0][1]*vec.y+self.data[0][2]*vec.z+self.data[0][3]*vec.w,
+			y: self.data[1][0]*vec.x+self.data[1][1]*vec.y+self.data[1][2]*vec.z+self.data[1][3]*vec.w,
+			z: self.data[2][0]*vec.x+self.data[2][1]*vec.y+self.data[2][2]*vec.z+self.data[2][3]*vec.w,
+			w: self.data[3][0]*vec.x+self.data[3][1]*vec.y+self.data[3][2]*vec.z+self.data[3][3]*vec.w
+		}
+	}
 }
 
 
 
 pub struct vertex {
-	pub pos: vec3,
-	pub color: Option<Color>
+	pub pos: vec3
 	//normal
+	//pub color: Option<Color>	
 }
 
 pub fn lerp(x1:f32, y1:f32, x2:f32, y2:f32, x:f32) -> f32{ 

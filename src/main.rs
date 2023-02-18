@@ -11,121 +11,105 @@ use minifb::Key;
 //16:9
 const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
+const ASPECT_RATIO: f32 = WIDTH as f32/HEIGHT as f32;
 
 fn main() {
 
 	let mut window_handler = WindowHandler::new(WIDTH, HEIGHT);
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
- 	
-    	//REFACTOR THIS, CLEAN THIS AND FIX ALL THIS
 
-    	const d:f32 = 250.0;//z' dist from camera to viewport assuming camera is at 0
-		let cam_pos = vec3{x:0.0, y:0.0, z:0.0};
-		let light_source = vec3{x: 250.0, y: 50.0, z: 0.0};
+		//use vertex here
+		let vertex_buffer = Vec::from([
 
-    	//cube!!
-		let points = Vec::from([
+			vec4{x: 100.0, y: -50.0, z:  100.0, w: 1.0}, //0
+			vec4{x: 200.0, y: -50.0, z:  100.0, w: 1.0}, //1
+			vec4{x: 200.0, y:  50.0, z:  100.0, w: 1.0}, //2
+			vec4{x: 100.0, y:  50.0, z:  100.0, w: 1.0}, //3
+			vec4{x: 100.0, y: -50.0, z:  200.0, w: 1.0}, //4
+			vec4{x: 200.0, y: -50.0, z:  200.0, w: 1.0}, //5
+			vec4{x: 200.0, y:  50.0, z:  200.0, w: 1.0}, //6
+			vec4{x: 100.0, y:  50.0, z:  200.0, w: 1.0}  //7
 
-			vec3{x: 270.0, y: 130.0, z: 100.0}, //0
-			vec3{x: 370.0, y: 130.0, z: 100.0}, //1
-			vec3{x: 370.0, y: 230.0, z: 100.0}, //2
-			vec3{x: 270.0, y: 230.0, z: 100.0}, //3
-			vec3{x: 270.0, y: 130.0, z: 200.0}, //4
-			vec3{x: 370.0, y: 130.0, z: 200.0}, //5
-			vec3{x: 370.0, y: 230.0, z: 200.0}, //6
-			vec3{x: 270.0, y: 230.0, z: 200.0}  //7
-			
-			]);
+		]);
 
 		let index_buffer = Vec::from([
 
-			0, 1, 2,
-			2, 3, 0,
-	
-			0, 1, 5,
-			5, 4, 0,
-
-			0, 3, 7,
-			7, 4, 0,
-	
-			1, 5, 6,
-			6, 2, 1,
-	
-			4, 7, 6,
-			6, 5, 4,
-	
-			2, 3, 7,
-			7, 6, 2
-			
-
-			]);
+			0, 1, 2, //FRONT
+			2, 3, 0, //FRONT
+			0, 1, 5, //UP
+			5, 4, 0, //UP
+			3, 2, 6, //DOWN
+			6, 7, 3, //DOWN
+			1, 5, 6, //RIGHT
+			6, 2, 1, //RIGHT
+			4, 0, 3, //LEFT
+			3, 7, 4, //LEFT
+			4, 5, 6, //BACK
+			6, 7, 4  //BACK
 		
-		//for points in polygon
-		for i in 0..12{
+		]);
 
+		const z_near: f32 = 0.5;
+		const z_far: f32 = 500.;
+		const cam_pos: vec3 = vec3{x: 0.0, y: 0.0, z: 0.0};
+		
+
+    	let proj = matrix4x4{data: [
+    		[z_near/ASPECT_RATIO, 0.0, 0.0, 0.0],
+    		[0.0, z_near, 0.0, 0.0],
+       		[0.0, 0.0, (z_far+z_near), z_near*z_far*-1.],
+    		[0.0, 0.0, 1.0, 0.0]
+    		]};
+
+		//for points in polygon
+		for i in 0..(index_buffer.len()/3){
+			
+			
 			let normal = vec3::cross(
-				&(vec3::normalize(&(&points[index_buffer[(i*3)+1]]-&points[index_buffer[(i*3)+0]]))),
-				&(vec3::normalize(&(&points[index_buffer[(i*3)+1]]-&points[index_buffer[(i*3)+2]])))
+				&(vec3::normalize(&(&vertex_buffer[index_buffer[(i*3)+1]].to_vec3()
+				-&vertex_buffer[index_buffer[(i*3)+2]].to_vec3()))),
+				&(vec3::normalize(&(&vertex_buffer[index_buffer[(i*3)+1]].to_vec3()
+				-&vertex_buffer[index_buffer[(i*3)+0]].to_vec3())))
 				);
 
-			let cam_dir = vec3::normalize(&(&points[index_buffer[(i*3)+1]]-&cam_pos));
-			if vec3::dot(&normal, &cam_dir)<0.0 //backface culling
+			let cam_dir = vec3::normalize(&(&vertex_buffer[index_buffer[(i*3)+1]].to_vec3()-&cam_pos));
+			if (vec3::dot(&normal, &cam_dir))>0.0	//backface culling
 			{
+
+
+				let mut point1 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+0]]).to_vec3();
+				let mut point2 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+1]]).to_vec3();
+				let mut point3 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+2]]).to_vec3();
+
 				let p1 = vec2{
-					x: (d*points[index_buffer[i*3]].x)/(d+points[index_buffer[i*3]].z),
-					y: (d*points[index_buffer[i*3]].y)/(d+points[index_buffer[i*3]].z)
-				};
-				let p2 = vec2{
-					x: (d*points[index_buffer[(i*3)+1]].x)/(d+points[index_buffer[(i*3)+1]].z),
-					y: (d*points[index_buffer[(i*3)+1]].y)/(d+points[index_buffer[(i*3)+1]].z)
-				};
-				let p3 = vec2{
-					x: (d*points[index_buffer[(i*3)+2]].x)/(d+points[index_buffer[(i*3)+2]].z),
-					y: (d*points[index_buffer[(i*3)+2]].y)/(d+points[index_buffer[(i*3)+2]].z)
+					x: (point1.x+1.0)*(WIDTH/2) as f32,
+					y: (point1.y+1.0)*(HEIGHT/2) as f32
 				};
 			
-				//window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
-
-				window_handler.putPixel(light_source.x as u16, light_source.y as u16);
-				let light_dir1 = vec3::normalize(&(&light_source-&points[index_buffer[(i*3)+0]]));
-				let light_dir2 = vec3::normalize(&(&light_source-&points[index_buffer[(i*3)+1]]));
-				let light_dir3 = vec3::normalize(&(&light_source-&points[index_buffer[(i*3)+2]]));
-
-				let light_intensity1 = (vec3::dot(&normal, &light_dir1)).max(0.0);
-				let light_intensity2 = (vec3::dot(&normal, &light_dir2)).max(0.0); 
-				let light_intensity3 = (vec3::dot(&normal, &light_dir3)).max(0.0);
-
-				let v1 = vertex{pos: p1.to_vec3(),
-					color: Some(Color(
-						(255.0*light_intensity1)as u8,
-						(255.0*light_intensity1)as u8,
-						(255.0*light_intensity1)as u8,1.0))};
-				let v2 = vertex{pos: p2.to_vec3(),
-					color: Some(Color(
-						(255.0*light_intensity2)as u8,
-						(255.0*light_intensity2)as u8,
-						(255.0*light_intensity2)as u8,1.0))};
-				let v3 = vertex{pos: p3.to_vec3(),
-					color: Some(Color(
-						(255.0*light_intensity3)as u8,
-						(255.0*light_intensity3)as u8,
-						(255.0*light_intensity3)as u8,1.0))};
-				//window_handler.draw_shaded_triangle(&v1, &v2, &v3);
-
+				let p2 = vec2{
+					x: (point2.x+1.0)*(WIDTH/2) as f32,
+					y: (point2.y+1.0)*(HEIGHT/2) as f32
+				};
+			
+				let p3 = vec2{
+					x: (point3.x+1.0)*(WIDTH/2) as f32,
+					y: (point3.y+1.0)*(HEIGHT/2) as f32
+				};
+				if i==0 || i==1{window_handler.set_color(Color(77, 78, 216, 1.0));}
+				else{window_handler.set_color(Color(234, 234, 232, 1.0));}
+				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
 			}
-
 		}
-		let tp1 = vec2{x: 200.0, y: 200.0};
-		let tp2 = vec2{x: 100.0, y: 200.0};//{x: 200.0, y: 300.0};
-		let tp3 = vec2{x: 300.0, y: 300.0};
-		window_handler.set_color(Color(255,255,255,1.0));
-		window_handler.draw_triangle("WIREFRAME", &tp1, &tp2, &tp3);
-		window_handler.set_color(Color(255,0,0,1.0));
-		window_handler.draw_triangle("FILL", &tp1, &tp2, &tp3);
-    	window_handler.render();
+
+
+
+		window_handler.render();
 	}
 }
 
 
 
+//eaeae8 rgb(234, 234, 232) //white
+//4d4ed8 rgb(77, 78, 216)	//blue
+//d74e52 rgb(215, 78, 82)	//red

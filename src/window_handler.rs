@@ -51,12 +51,12 @@ impl WindowHandler{
 	}
 
 	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
-		self.buffer[(x as u32 +y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
+		self.buffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
 	}
 	
 	pub fn draw_line(&mut self, x1:u16, y1:u16, x2:u16, y2:u16){
-		let diffx = if x2>x1 {x2-x1} else {x1-x2};
-		let diffy = if y2>y1 {y2-y1} else {y1-y2};
+		let diffx = if x2>x1 {x2-x1+1} else {x1-x2+1};
+		let diffy = if y2>y1 {y2-y1+1} else {y1-y2+1};
 
 		if diffx > diffy{
 			for i in 0..diffx{
@@ -77,11 +77,6 @@ impl WindowHandler{
 
 
 	pub fn draw_triangle(&mut self, style:&str, p1: &vec2, p2: &vec2, p3: &vec2){
-		//check if equal or collinear
-		if (p2.y-p1.y)/(p2.x-p1.x)==(p3.y-p2.y)/(p3.x-p2.x){
-			panic!("lines are collinear can't make a triangle");
-		}
-
 		if style == "WIREFRAME"{
 			self.draw_line(p1.x as u16, p1.y as u16, p2.x as u16, p2.y as u16);
 			self.draw_line(p2.x as u16, p2.y as u16, p3.x as u16, p3.y as u16);
@@ -97,28 +92,33 @@ impl WindowHandler{
 
 			if sp1.y == sp2.y && sp1.x>sp2.x{vec2::swap(&mut sp1, &mut sp2);}
 
-			for i in 0..(sp2.y-sp1.y+1) as u16{
+			for i in 0..(sp2.y-sp1.y+1.0) as u16{
 				let i = f32::from(i);
 				//lerp line 1-2
-				let x1 = lerp(sp1.y, sp1.x, sp2.y, sp2.x, sp1.y+i+1.0);
+				let x1 = lerp(sp1.y, sp1.x, sp2.y, sp2.x, sp1.y+i);
 				//lerp line 1-3
-				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp1.y+i+1.0);
+				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp1.y+i);
 				//draw
 				self.draw_line(x1 as u16, (sp1.y+i) as u16, x2 as u16, (sp1.y+i) as u16);
 			}
 			for i in 0..(sp3.y-sp2.y+1.0) as u16{
 				let i = f32::from(i);
 				//lerp line 1-2
-				let x1 = lerp(sp2.y, sp2.x, sp3.y, sp3.x, sp2.y+i+1.0);
+				let x1 = lerp(sp2.y, sp2.x, sp3.y, sp3.x, sp2.y+i);
 				//lerp line 1-3
-				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp2.y+i+1.0);
+				let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp2.y+i);
 				//draw
 				self.draw_line(x1 as u16, (sp2.y+i) as u16, x2 as u16, (sp2.y+i) as u16);
 			}
 		}
-		else {panic!("invalid style");}
+		else {panic!("Invalid style");}
 	}
 
+
+/*
+
+	//removed color from vertex
+	
 	pub fn draw_shaded_triangle(&mut self, v1: &vertex, v2: &vertex, v3: &vertex){
 		if let (Some(color1), Some(color2), Some(color3)) = (&v1.color, &v2.color, &v3.color){
 			let mut p1 = v1.pos.to_vec2();
@@ -143,19 +143,19 @@ impl WindowHandler{
 
 			for i in 0..(p2.y-p1.y+1.0) as u16{
 				let i = f32::from(i);
-				let x1 = lerp(p1.y, p1.x, p2.y, p2.x, p1.y+i+1.0);
-				let cx1 = Color::mix(&c1, &c2, i as f64/(p2.y-p1.y) as f64);
-				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p1.y+i+1.0);
-				let cx2 = Color::mix(&c1, &c3, i as f64/(p2.y-p1.y) as f64);
+				let x1 = lerp(p1.y, p1.x, p2.y, p2.x, p1.y+i);
+				let cx1 = Color::mix(&c1, &c2, i as f32/(p2.y-p1.y) as f32);
+				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p1.y+i);
+				let cx2 = Color::mix(&c1, &c3, i as f32/(p2.y-p1.y) as f32);
 				self.draw_shaded_line(&vec2{x:x1, y:(p1.y+i)}, &vec2{x:x2, y:(p1.y+i)}, &cx1, &cx2);
 			}
 			for i in 0..(p3.y-p2.y+1.0) as u16{
 				let i = f32::from(i);
-				let x1 = lerp(p2.y, p2.x, p3.y, p3.x, p2.y+i+1.0);
-				let cx1 = Color::mix(&c1, &c2, i as f64/(p3.y-p2.y) as f64);
-				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p2.y+i+1.0);
-				let cx2 = Color::mix(&c1, &c3, i as f64/(p3.y-p2.y) as f64);
-				self.draw_shaded_line(&vec2{x:x1 , y:(p2.y+i+1.0)}, &vec2{x:x2, y:(p2.y+i+1.0)}, &cx1, &cx2);
+				let x1 = lerp(p2.y, p2.x, p3.y, p3.x, p2.y+i);
+				let cx1 = Color::mix(&c1, &c2, i as f32/(p3.y-p2.y) as f32);
+				let x2 = lerp(p1.y, p1.x, p3.y, p3.x, p2.y+i);
+				let cx2 = Color::mix(&c1, &c3, i as f32/(p3.y-p2.y) as f32);
+				self.draw_shaded_line(&vec2{x:x1 , y:(p2.y+i)}, &vec2{x:x2, y:(p2.y+i+1.0)}, &cx1, &cx2);
 			}
 		}		
 		else {
@@ -171,14 +171,14 @@ impl WindowHandler{
 		let y1 = p1.y as u16;
 		let y2 = p2.y as u16;
 
-		let diffx = if x2>x1 {x2-x1} else {x1-x2};
-		let diffy = if y2>y1 {y2-y1} else {y1-y2};
+		let diffx = if x2>x1 {x2-x1+1} else {x1-x2+1};
+		let diffy = if y2>y1 {y2-y1+1} else {y1-y2+1};
 
 		if diffx > diffy{
 			for i in 0..diffx{
 				let x3 = if x2>x1 {x1+i} else {x1-i};
 				let y3 = lerp(x1 as f32, y1 as f32, x2 as f32, y2 as f32, x3 as f32) as u16;
-				let c3 = Color::mix(c1, c2, i as f64/diffx as f64);
+				let c3 = Color::mix(c1, c2, i as f32/diffx as f32);
 				self.put_pixel_with_color(x3, y3, c3);
 			}
 		}
@@ -186,12 +186,12 @@ impl WindowHandler{
 			for i in 0..diffy{
 				let y3 = if y2>y1 {y1+i} else {y1-i};
 				let x3 = lerp(y1 as f32, x1 as f32, y2 as f32, x2 as f32, y3 as f32) as u16;
-				let c3 = Color::mix(c1, c2, i as f64/diffy as f64);
+				let c3 = Color::mix(c1, c2, i as f32/diffy as f32);
 				self.put_pixel_with_color(x3, y3, c3);
 			}
 		}
 	}
-
+*/
 
 
 
