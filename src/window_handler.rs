@@ -3,7 +3,8 @@ use crate::util::*;
 
 pub struct WindowHandler {
 	pub window: Window,
-	pub buffer: Vec<u32>,
+	pub framebuffer: Vec<u32>,
+	pub depth_buffer: Vec<f32>,
 	pub win_WIDTH: usize,
 	pub win_HEIGHT: usize,
 	pub current_color: u32
@@ -21,10 +22,13 @@ impl WindowHandler{
 
 		window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
-		let mut buffer: Vec<u32> = vec![0;WIDTH*HEIGHT];
+		let mut framebuffer: Vec<u32> = vec![0;WIDTH*HEIGHT];
+		let mut depth_buffer: Vec<f32> = vec![1.;WIDTH*HEIGHT];
 
-		WindowHandler{window: window,
-			buffer: buffer,
+		WindowHandler{
+			window: window,
+			framebuffer: framebuffer,
+			depth_buffer: depth_buffer,
 			win_WIDTH: WIDTH,
 			win_HEIGHT: HEIGHT,
 			current_color: Color(255,255,255,1.0).to_u32()//WHITE(255,255,255) AND BLACK(0)
@@ -32,14 +36,14 @@ impl WindowHandler{
 	}
 
 	pub fn clear(&mut self){
-		for i in self.buffer.iter_mut(){
+		for i in self.framebuffer.iter_mut(){
 			*i = 0;
 		}
-		self.window.update_with_buffer(&self.buffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
+		self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
 
 	pub fn render(&mut self){
-		self.window.update_with_buffer(&self.buffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
+		self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
 
 	pub fn set_color(&mut self, color:Color){
@@ -47,11 +51,11 @@ impl WindowHandler{
 	}
 
 	pub fn putPixel(&mut self, x:u16, y:u16){
-		self.buffer[(x as u32 +y as u32 *self.win_WIDTH as u32)as usize] = self.current_color;
+		self.framebuffer[(x as u32 +y as u32 *self.win_WIDTH as u32)as usize] = self.current_color;
 	}
 
 	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
-		self.buffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
+		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
 	}
 	
 	pub fn draw_line(&mut self, x1:u16, y1:u16, x2:u16, y2:u16){

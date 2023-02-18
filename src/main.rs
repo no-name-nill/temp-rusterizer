@@ -78,27 +78,26 @@ fn main() {
 			{
 
 
-				let mut point1 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+0]]).to_vec3();
-				let mut point2 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+1]]).to_vec3();
-				let mut point3 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+2]]).to_vec3();
+				let mut p1 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+0]]).to_vec3();
+				let mut p2 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+1]]).to_vec3();
+				let mut p3 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+2]]).to_vec3();
 
-				let p1 = vec2{
-					x: (point1.x+1.0)*(WIDTH/2) as f32,
-					y: (point1.y+1.0)*(HEIGHT/2) as f32
-				};
-			
-				let p2 = vec2{
-					x: (point2.x+1.0)*(WIDTH/2) as f32,
-					y: (point2.y+1.0)*(HEIGHT/2) as f32
-				};
-			
-				let p3 = vec2{
-					x: (point3.x+1.0)*(WIDTH/2) as f32,
-					y: (point3.y+1.0)*(HEIGHT/2) as f32
-				};
+				p1.x = (p1.x+1.0)*(WIDTH/2) as f32;
+				p1.y = (p1.y+1.0)*(HEIGHT/2) as f32;
+				p1.z = (p1.z*2.)/(z_far-z_near);
+
+				p2.x = (p2.x+1.0)*(WIDTH/2) as f32;
+				p2.y = (p2.y+1.0)*(HEIGHT/2) as f32;			
+				p2.z = (p2.z*2.)/(z_far-z_near);
+				
+				p3.x = (p3.x+1.0)*(WIDTH/2) as f32;
+				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
+				p3.z = (p3.z*2.)/(z_far-z_near);
+
 				if i==0 || i==1{window_handler.set_color(Color(77, 78, 216, 1.0));}
 				else{window_handler.set_color(Color(234, 234, 232, 1.0));}
-				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
+				//p1.z is messed up
+				//window_handler.draw_triangle("FILL", &p1, &p2, &p3);
 			}
 		}
 

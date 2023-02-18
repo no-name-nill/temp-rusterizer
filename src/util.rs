@@ -123,6 +123,12 @@ impl vec3{
 		}
 	}
 
+	pub fn swap(a:&mut vec3,  b:&mut vec3){
+		let c = vec3{x:a.x, y:a.y, z:a.z};
+		a.x = b.x; a.y = b.y; a.z = b.z;
+		b.x = c.x; b.y = c.y; b.z = c.z;
+	}
+
 	pub fn cross(a:&vec3, b:&vec3) -> vec3{
 		let n = vec3{
 			x: (a.y*b.z)-(b.y*a.z),
