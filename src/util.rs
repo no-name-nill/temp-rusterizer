@@ -166,7 +166,13 @@ impl vec3{
 		}
 	}
 
-	//pub fn copy(&self)->vec2{}
+	pub fn copy(&self)->vec3{
+		vec3{
+			x: self.x,
+			y: self.y,
+			z: self.z
+		}
+	}
 }
 
 pub struct vec4 {

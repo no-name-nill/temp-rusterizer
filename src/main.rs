@@ -2,6 +2,7 @@
 
 mod util;
 mod window_handler;
+mod renderer;
 
 use util::*;
 use window_handler::WindowHandler;
@@ -18,6 +19,7 @@ fn main() {
 	let mut window_handler = WindowHandler::new(WIDTH, HEIGHT);
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
+    	//control the ups
 
 		//use vertex here
 		let vertex_buffer = Vec::from([
@@ -32,6 +34,8 @@ fn main() {
 			vec4{x: 100.0, y:  50.0, z:  200.0, w: 1.0}  //7
 
 		]);
+
+		let obj_pos = vec3{x: 150.0, y: 0.0, z: 150.0};
 
 		let index_buffer = Vec::from([
 
@@ -58,7 +62,7 @@ fn main() {
     	let proj = matrix4x4{data: [
     		[z_near/ASPECT_RATIO, 0.0, 0.0, 0.0],
     		[0.0, z_near, 0.0, 0.0],
-       		[0.0, 0.0, (z_far+z_near), z_near*z_far*-1.],
+       		[0.0, 0.0, (z_far+z_near), (z_near*z_far*-1.)],
     		[0.0, 0.0, 1.0, 0.0]
     		]};
 
@@ -84,20 +88,20 @@ fn main() {
 
 				p1.x = (p1.x+1.0)*(WIDTH/2) as f32;
 				p1.y = (p1.y+1.0)*(HEIGHT/2) as f32;
-				p1.z = (p1.z*2.)/(z_far-z_near);
+				p1.z = ((p1.z*2.)/(z_far-z_near))-1.;
 
 				p2.x = (p2.x+1.0)*(WIDTH/2) as f32;
 				p2.y = (p2.y+1.0)*(HEIGHT/2) as f32;			
-				p2.z = (p2.z*2.)/(z_far-z_near);
+				p2.z = ((p2.z*2.)/(z_far-z_near))-1.;
 				
 				p3.x = (p3.x+1.0)*(WIDTH/2) as f32;
 				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
-				p3.z = (p3.z*2.)/(z_far-z_near);
+				p3.z = ((p3.z*2.)/(z_far-z_near))-1.;
 
 				if i==0 || i==1{window_handler.set_color(Color(77, 78, 216, 1.0));}
+				else if i==2 || i==3{window_handler.set_color(Color(215, 50, 50, 1.0));}
 				else{window_handler.set_color(Color(234, 234, 232, 1.0));}
-				//p1.z is messed up
-				//window_handler.draw_triangle("FILL", &p1, &p2, &p3);
+				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
 			}
 		}
 
