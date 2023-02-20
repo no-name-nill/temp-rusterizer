@@ -21,21 +21,33 @@ fn main() {
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
     	//control the ups
 
-		//use vertex here
-		let vertex_buffer = Vec::from([
-
-			vec4{x: 100.0, y: -50.0, z:  100.0, w: 1.0}, //0
-			vec4{x: 200.0, y: -50.0, z:  100.0, w: 1.0}, //1
-			vec4{x: 200.0, y:  50.0, z:  100.0, w: 1.0}, //2
-			vec4{x: 100.0, y:  50.0, z:  100.0, w: 1.0}, //3
-			vec4{x: 100.0, y: -50.0, z:  200.0, w: 1.0}, //4
-			vec4{x: 200.0, y: -50.0, z:  200.0, w: 1.0}, //5
-			vec4{x: 200.0, y:  50.0, z:  200.0, w: 1.0}, //6
-			vec4{x: 100.0, y:  50.0, z:  200.0, w: 1.0}  //7
-
+    	let cube_model: Vec<util::vec4> = Vec::from([		
+    		vec4{x: -1.0, y: -1.0, z:  -1.0, w: 1.0}, //0
+			vec4{x:  1.0, y: -1.0, z:  -1.0, w: 1.0}, //1
+			vec4{x:  1.0, y:  1.0, z:  -1.0, w: 1.0}, //2
+			vec4{x: -1.0, y:  1.0, z:  -1.0, w: 1.0}, //3
+			vec4{x: -1.0, y: -1.0, z:  1.0, w: 1.0}, //4
+			vec4{x:  1.0, y: -1.0, z:  1.0, w: 1.0}, //5
+			vec4{x:  1.0, y:  1.0, z:  1.0, w: 1.0}, //6
+			vec4{x: -1.0, y:  1.0, z:  1.0, w: 1.0}  //7
 		]);
 
+		//use vertex here
+
+		let scale = matrix4x4{data: [
+			[50.0, 0.0,  0.0,  0.0],
+			[0.0,  50.0, 0.0,  0.0],
+			[0.0,  0.0,  50.0, 0.0],
+			[0.0,  0.0,  0.0,  1.0]
+			
+			]};
+
 		let obj_pos = vec3{x: 150.0, y: 0.0, z: 150.0};
+
+		let mut vertex_buffer = Vec::new();
+		for i in (0..cube_model.len()){
+			vertex_buffer.push((&(scale.matrix_vec_mult(&cube_model[i])).to_vec3()+&obj_pos).to_vec4());
+		}
 
 		let index_buffer = Vec::from([
 
