@@ -52,7 +52,7 @@ impl WindowHandler{
 		self.current_color = color.to_u32();
 	}
 
-
+	#[allow(non_snake_case)]
 	pub fn putPixel(&mut self, x:u16, y:u16){
 		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = self.current_color;
 	}
