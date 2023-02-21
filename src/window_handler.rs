@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use minifb::{Window, WindowOptions};
 use crate::util::*;
 
@@ -36,8 +38,9 @@ impl WindowHandler{
 	}
 
 	pub fn clear(&mut self){
-		for i in self.framebuffer.iter_mut(){
-			*i = 0;
+		for i in (0..self.win_WIDTH*self.win_HEIGHT){
+			self.framebuffer[i] = 0;
+			self.depth_buffer[i]= 1.;
 		}
 		self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
