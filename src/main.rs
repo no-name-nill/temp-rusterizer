@@ -98,14 +98,13 @@ fn main() {
 				-&vertex_buffer[index_buffer[(i*3)+0]].to_vec3())))
 				);
 
-			if i==4 || i==5{println!("{}", normal.y);}
-
 			let cam_dir = vec3::normalize(&(&vertex_buffer[index_buffer[(i*3)+1]].to_vec3()-&cam_pos));
 			if (vec3::dot(&normal, &cam_dir))>0.0	//backface culling
 			{
 				//BUG HERE!!!
 				//why are they still here if i==4||i==5{println!("BUG");}
 				//lot of axis coordinate space are messed up very bad
+				//in world space +1 is up not in my case change that
 
 
 				//limit update per second
