@@ -42,7 +42,7 @@ impl WindowHandler{
 			self.framebuffer[i] = 0;
 			self.depth_buffer[i]= 1.;
 		}
-		self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
+		//self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
 
 

@@ -170,7 +170,9 @@ fn main() {
 			}
 		}
 		window_handler.render();
+		window_handler.clear();
 		delta_time += now.elapsed().as_millis();
+		println!("{:?}", delta_time);
 	}
 }
 
