@@ -38,12 +38,12 @@ const INDEX_BUFFER:[usize; 36] = [
 	2, 3, 0, //FRONT
 	0, 1, 5, //TOP
 	5, 4, 0, //TOP
-	6, 2, 3, //BOTTOM
-	3, 7, 6, //BOTTOM
-	1, 5, 6, //RIGHT
-	6, 2, 1, //RIGHT
-	4, 0, 3, //LEFT
-	3, 7, 4, //LEFT
+	3, 2, 6, //BOTTOM
+	6, 7, 3, //BOTTOM
+	6, 5, 1, //RIGHT
+	1, 2, 6, //RIGHT
+	3, 0, 4, //LEFT
+	4, 7, 3, //LEFT
 	4, 5, 6, //BACK
 	6, 7, 4  //BACK
 		
@@ -93,6 +93,7 @@ fn main() {
   		while delta_time > 60{
 
   			rad+=0.1;
+  			//rad = 1.0;
   			rotate = matrix4x4{data: [
   				[1.0, 0.0, 0.0, 0.0],
   				[0.0, rad.cos(), -1.*rad.sin(), 0.0],
@@ -157,22 +158,22 @@ fn main() {
 				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
 				p3.z = ((p3.z*2.)/(Z_FAR-Z_NEAR))-1.;
 
-				/*
+				
 				if i==0 || i==1{window_handler.set_color(Color(77, 78, 216, 1.0));}
 				else if i==2 || i==3{window_handler.set_color(Color(234, 234, 232, 1.0));}
 				else if i==4 || i==5{window_handler.set_color(Color(243, 196, 82, 1.0));}
 				else if i==6 || i==7{window_handler.set_color(Color(81, 225, 84, 1.0));}
 				else if i==8 || i==9{window_handler.set_color(Color(215, 78, 82, 1.0));}
-				else if i==10 || i==11{window_handler.set_color(Color(213, 212, 76, 1.0));}
+				else if i==10 || i==11{window_handler.set_color(Color(235, 125, 52, 1.0));}
 				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
-				*/
-				window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
+
+				//window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
 			}
 		}
 		window_handler.render();
 		window_handler.clear();
 		delta_time += now.elapsed().as_millis();
-		println!("{:?}", delta_time);
+		//println!("{:?}", delta_time);
 	}
 }
 
@@ -181,6 +182,6 @@ fn main() {
 //eaeae8 rgb(234, 234, 232) //white
 //4d4ed8 rgb(77, 78, 216)   //blue
 //d74e52 rgb(215, 78, 82)	//red
-//f3c452 rgb(243, 196, 82)  //orange
+//f3c452 rgb(235, 125, 52)  //orange
 //51e154 rgb(81, 225, 84)   //green
 //d5d44c rgb(213, 212, 76) //yellow

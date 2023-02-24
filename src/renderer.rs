@@ -33,8 +33,8 @@ mod D2{
 				for i in 0..diffx as u32{
 					let i = i as f32;
 					let x3 = (if p2.x>p1.x {p1.x+i} else {p1.x-i}) as u16;
-					let y3 = lerp(p1.x as f32, p1.y as f32, p2.x as f32, p2.y as f32, x3 as f32) as u16;
-					let z3 = lerp(p1.y as f32, p1.z as f32, p2.y as f32, p2.z as f32, y3 as f32);
+					let y3 = lerp(p1.x, p1.y, p2.x, p2.y, x3 as f32) as u16;
+					let z3 = lerp(p1.x, p1.z, p2.x, p2.z, x3 as f32);
 					if z3 < self.depth_buffer[x3 as usize + (y3 as usize*self.win_WIDTH)]{
 						self.depth_buffer[x3 as usize + (y3 as usize*self.win_WIDTH)] = z3;
 						self.putPixel(x3, y3);
@@ -45,8 +45,8 @@ mod D2{
 				for i in 0..diffy as u32{
 					let i = i as f32;
 					let y3 = (if p2.y>p1.y {p1.y+i} else {p1.y-i}) as u16;
-					let x3 = lerp(p1.y as f32, p1.x as f32, p2.y as f32, p2.x as f32, y3 as f32) as u16;
-					let z3 = lerp(p1.y as f32, p1.z as f32, p2.y as f32, p2.z as f32, y3 as f32);
+					let x3 = lerp(p1.y, p1.x, p2.y, p2.x, y3 as f32) as u16;
+					let z3 = lerp(p1.y, p1.z, p2.y, p2.z, y3 as f32);
 					if z3 < self.depth_buffer[x3 as usize + (y3 as usize*self.win_WIDTH)]{
 						self.depth_buffer[x3 as usize + (y3 as usize*self.win_WIDTH)] = z3;
 						self.putPixel(x3, y3);
@@ -93,7 +93,7 @@ mod D2{
 					let x2 = lerp(sp1.y, sp1.x, sp3.y, sp3.x, sp2.y+i);
 					let z2 = lerp(sp1.y, sp1.z, sp3.y, sp3.z, sp2.y+i);
 					//draw
-					self.draw_line_with_vec(&vec3{x: x1, y:(sp2.y+i), z: p1.z}, &vec3{x: x2, y:(sp2.y+i), z: p1.z});
+					self.draw_line_with_vec(&vec3{x: x1, y:(sp2.y+i), z: z1}, &vec3{x: x2, y:(sp2.y+i), z: z2});
 				}
 			}
 			else {panic!("Invalid style");}
