@@ -200,6 +200,15 @@ impl vec4{
 			}
 		}
 	}
+
+	pub fn copy(&self)->vec4{
+		vec4{
+			x: self.x,
+			y: self.y,
+			z: self.z,
+			w: self.w
+		}
+	}
 }
 
 pub struct matrix4x4 {
@@ -219,9 +228,10 @@ impl matrix4x4 {
 
 
 
-pub struct vertex {
-	pub pos: vec3
-	//normal
+pub struct Vertex {
+	pub pos: vec4,
+	pub normal: Option<vec4>,
+	pub tex_coord: Option<vec4>
 	//pub color: Option<Color>	
 }
 

@@ -3,6 +3,7 @@
 mod util;
 mod window_handler;
 mod renderer;
+//mod obj_loader;
 
 use std::time;
 
@@ -61,6 +62,8 @@ fn main() {
 
 	let mut rad:f32 = 0.0;
 
+    //obj_loader::load_from_obj("res/cube2.obj");
+
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
 
 		//rotate!!
@@ -93,7 +96,6 @@ fn main() {
   		while delta_time > 60{
 
   			rad+=0.1;
-  			//rad = 1.0;
   			rotate = matrix4x4{data: [
   				[1.0, 0.0, 0.0, 0.0],
   				[0.0, rad.cos(), -1.*rad.sin(), 0.0],
